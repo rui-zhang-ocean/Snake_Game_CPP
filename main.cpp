@@ -6,8 +6,8 @@ using namespace std;
 
 bool gameOver;
 bool shutDown;
-const int width = 25;
-const int height = 15;
+const int width = 20;
+const int height = 12;
 int x, y, foodX, foodY, score;
 int tailX[100], tailY[100], nTail;
 enum eDirection {STOP, LEFT, RIGHT, UP, DOWN};
@@ -17,12 +17,12 @@ void StartScreen()
 {
 	system("cls");
 	cout << "\nWELCOME TO SNAKE GAME!"
-	     << "\n\nPress 's' to Start, Use WASD for direction control!"
+	     << "\n\nPress 's' to Start, use WASD for direction control!"
 	     << "\n\nPress 'q' to Quit"
 	     << "\n\nYour Previous Score: " << score << endl;
 }
 
-void FoodSpawn()
+void CoinSpawn()
 {
 	foodX = rand() % width;
 	foodY = rand() % height;
@@ -34,13 +34,13 @@ void Setup()
 	dir = STOP;
 	x = width / 2;
 	y = height / 2;
-	FoodSpawn();
+	CoinSpawn();
 	score = 0;
 	nTail = 0;
 }
 void Draw()
 {
-	system("cls"); //clear screen
+	system("cls"); 
 	for (int i = 0; i < width + 2; i++) {
 		cout << "#";}
 	cout << endl;
@@ -56,7 +56,7 @@ void Draw()
 				cout << "O";
 			
 			else if (i == foodY && j == foodX) 
-				cout << "F";
+				cout << "$";
 		
 			else {
 				bool print = false;
@@ -80,6 +80,12 @@ void Draw()
 	}
 	cout << endl;
 	cout << "Score: " << score << endl;
+	
+	if (dir == LEFT || dir == RIGHT)
+	    Sleep(40);
+    if (dir == UP || dir == DOWN)
+    	Sleep(60);
+	
 }
 void Input()
 {
@@ -137,10 +143,14 @@ void Logic()
 		y++;
 		break;
 	}
-	if (x > width || x < 0 || y > height || y < 0) {
-		gameOver = true;
-		StartScreen();
-	}
+	//if (x > width || x < 0 || y > height || y < 0) {
+	//	gameOver = true;
+	//	StartScreen();
+	
+	// magic snake can go through the wall!
+	if (x >= width) x = 0; else if (x < 0) x = width - 1;
+	if (y >= height) y = 0; else if (y < 0) y = height - 1;
+	
 
 	for (int i = 0; i < nTail; i++) {
 		if (tailX[i] == x && tailY[i] == y)
@@ -148,9 +158,9 @@ void Logic()
 	}
 
 	if (x == foodX && y == foodY) {
-		score++;
+		score += 10;
 		nTail++;
-		FoodSpawn();
+		CoinSpawn();
 	}
 }
 int main()
@@ -167,7 +177,7 @@ int main()
 				Draw();
 				Input();
 				Logic();
-				Sleep(100);
+				Sleep(50);
 			}
 		}
 		else if (input == "q")
